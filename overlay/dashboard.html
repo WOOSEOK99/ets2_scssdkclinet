@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ETS2/ATS Telemetry Dashboard Pro</title>
+    <style>
+        :root {
+            --bg-color: #0f1115;
+            --panel-bg: #1a1d24;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --accent-blue: #3b82f6;
+            --accent-green: #10b981;
+            --accent-orange: #f59e0b;
+            --accent-red: #ef4444;
+            --light-off: #374151;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
+
+        body { background-color: var(--bg-color); color: var(--text-main); padding: 20px; min-height: 100vh; display: flex; flex-direction: column; gap: 20px; overflow-x: hidden; }
+
+        /* Header */
+        header { display: flex; justify-content: space-between; align-items: center; background: var(--panel-bg); padding: 12px 20px; border-radius: 8px; border-left: 5px solid var(--light-off); }
+        header.connected { border-left-color: var(--accent-green); }
+        header.disconnected { border-left-color: var(--accent-red); }
+
+        .status-container { display: flex; gap: 15px; align-items: center; font-size: 14px; }
+        .badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; background: var(--light-off); }
+        .badge.active { background: var(--accent-green); color: #000; }
+        .badge.warning { background: var(--accent-orange); color: #000; }
+
+        .btn-settings { background: #374151; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        .btn-settings:hover { background: #4b5563; }
+
+        /* Dashboard Grid */
+        .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; align-items: start; }
+
+        /* Panels */
+        .panel { background: var(--panel-bg); border-radius: 8px; padding: 20px; display: flex; flex-direction: column; gap: 15px; transition: display 0.2s; }
+        .panel.hidden { display: none !important; }
+        .panel-title { font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #2d3139; padding-bottom: 8px; }
+
+        /* Info Row */
+        .info-row { display: flex; justify-content: space-between; font-size: 14px; padding: 4px 0; border-bottom: 1px solid #232730; }
+        .info-row span:first-child { color: var(--text-muted); }
+
+        /* Gauges */
+        .gauge-item { display: flex; flex-direction: column; gap: 5px; }
+        .gauge-meta { display: flex; justify-content: space-between; font-size: 14px; }
+        .gauge-outer { width: 100%; height: 12px; background: #2d3139; border-radius: 6px; overflow: hidden; position: relative; }
+        .gauge-inner { width: 0%; height: 100%; background: var(--accent-green); transition: width 0.1s linear; }
+        .gauge-inner.warning { background: var(--accent-red); }
+
+        /* Cluster */
+        .cluster { grid-column: span 2; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 15px; }
+        @media (max-width: 768px) { .cluster { grid-column: span 1; grid-template-columns: 1fr; } }
+        .speed-display { display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.2); border-radius: 6px; padding: 20px; }
+        .speed-num { font-size: 72px; font-weight: 900; line-height: 1; color: var(--text-main); }
+        .speed-unit { font-size: 16px; color: var(--text-muted); margin-top: 5px; }
+        .gear-display { display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(0,0,0,0.2); border-radius: 6px; }
+        .gear-num { font-size: 64px; font-weight: bold; color: var(--accent-blue); }
+        .rpm-container { display: flex; flex-direction: column; justify-content: center; gap: 8px; }
+
+        /* Light/Warn Icons */
+        .grid-icons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; text-align: center; }
+        .icon-box { background: #232730; padding: 10px 5px; border-radius: 6px; font-size: 12px; font-weight: bold; color: var(--light-off); transition: all 0.2s; }
+        .icon-box.active-green { color: #000; background: var(--accent-green); }
+        .icon-box.active-blue { color: #000; background: var(--accent-blue); }
+        .icon-box.active-orange { color: #000; background: var(--accent-orange); }
+        .icon-box.active-red { color: #fff; background: var(--accent-red); animation: blink 0.5s infinite alternate; }
+
+        /* Nav */
+        .nav-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .speed-limit-sign { width: 70px; height: 70px; border-radius: 50%; background: white; border: 8px solid var(--accent-red); color: black; display: flex; justify-content: center; align-items: center; font-size: 24px; font-weight: bold; margin: auto; }
+
+        /* Controls (Pedals) */
+        .pedal-bar { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+        .pedal-fill-container { width: 40px; height: 100px; background: #2d3139; border-radius: 4px; position: relative; overflow: hidden; }
+        .pedal-fill { position: absolute; bottom: 0; left: 0; width: 100%; background: var(--accent-green); height: 0%; transition: height 0.05s; }
+        .pedal-fill.throttle { background: var(--accent-blue); }
+        .pedal-fill.brake { background: var(--accent-red); }
+        .pedal-fill.clutch { background: var(--accent-orange); }
+
+        .steering-container { width: 100%; height: 20px; background: #2d3139; border-radius: 10px; position: relative; margin-top: 10px;}
+        .steering-indicator { width: 10px; height: 20px; background: white; position: absolute; left: 50%; transform: translateX(-50%); border-radius: 5px; transition: left 0.05s; }
+
+        /* Modals & Toasts */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 100; }
+        .modal-overlay.active { display: flex; }
+        .modal-content { background: var(--panel-bg); padding: 30px; border-radius: 8px; width: 400px; max-width: 90%; }
+        .setting-item { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #2d3139; }
+        .setting-item label { cursor: pointer; user-select: none; flex-grow: 1; }
+        
+        .toast-container { position: fixed; bottom: 20px; right: 20px; display: flex; flex-direction: column; gap: 10px; z-index: 1000; pointer-events: none;}
+        .toast { background: var(--accent-blue); color: #fff; padding: 15px 25px; border-radius: 8px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.3); animation: slideIn 0.3s forwards, fadeOut 0.5s 4s forwards; }
+        
+        @keyframes blink { 0% { opacity: 0.4; } 100% { opacity: 1; } }
+        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes fadeOut { to { opacity: 0; } }
+
+    </style>
+</head>
+<body>
+
+    <header id="connection-status" class="disconnected">
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <h1 style="font-size: 18px;" id="game-title">ETS2/ATS Dashboard</h1>
+            <span id="paused-badge" class="badge warning" style="display: none;">PAUSED</span>
+        </div>
+        <div class="status-container">
+            <span id="ws-status" class="badge">서버 연결 중...</span>
+            <span id="sdk-status" class="badge">SDK OFF</span>
+            <button class="btn-settings" onclick="openSettings()">⚙️ UI 설정</button>
+        </div>
+    </header>
+
+    <div class="dashboard-grid">
+
+        <!-- 1. 메인 클러스터 -->
+        <div class="panel cluster" id="panel-cluster">
+            <div class="speed-display">
+                <span class="speed-num" id="truck-speed">0</span>
+                <span class="speed-unit">km/h</span>
+            </div>
+            <div class="gear-display">
+                <span style="font-size: 12px; color: var(--text-muted);">GEAR</span>
+                <span class="gear-num" id="truck-gear">N</span>
+            </div>
+            <div class="rpm-container">
+                <div class="gauge-meta"><span>RPM</span><span id="truck-rpm-text">0 / 0</span></div>
+                <div class="gauge-outer" style="height: 20px;"><div id="truck-rpm-bar" class="gauge-inner"></div></div>
+                <div class="info-row" style="border:none; padding:0; margin-top:5px;">
+                    <span>크루즈</span><span id="cruise-status" style="font-weight: bold;">OFF</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. 연료 및 소모품 -->
+        <div class="panel" id="panel-fuel">
+            <div class="panel-title">연료 및 소모품</div>
+            <div class="gauge-item">
+                <div class="gauge-meta"><span>연료 잔량</span><span id="fuel-text">0L (잔여 0km)</span></div>
+                <div class="gauge-outer"><div id="fuel-bar" class="gauge-inner"></div></div>
+            </div>
+            <div class="gauge-item">
+                <div class="gauge-meta"><span>요소수 잔량</span><span id="adblue-text">0L</span></div>
+                <div class="gauge-outer"><div id="adblue-bar" class="gauge-inner"></div></div>
+            </div>
+            <div class="info-row"><span>총 주행거리</span><span id="truck-odometer">0.0 km</span></div>
+        </div>
+
+        <!-- 3. 라이트 -->
+        <div class="panel" id="panel-lights">
+            <div class="panel-title">라이트 상태</div>
+            <div class="grid-icons">
+                <div id="light-parking" class="icon-box">미등</div>
+                <div id="light-beamLow" class="icon-box">하향등</div>
+                <div id="light-beamHigh" class="icon-box">상향등</div>
+                <div id="light-beacon" class="icon-box">경광등</div>
+                <div id="light-blinkerLeft" class="icon-box">◀ 좌측</div>
+                <div id="light-blinkerRight" class="icon-box">우측 ▶</div>
+                <div id="light-hazard" class="icon-box">비상등</div>
+                <div id="light-wipers" class="icon-box">와이퍼</div>
+            </div>
+        </div>
+
+        <!-- 4. 경고등 -->
+        <div class="panel" id="panel-warnings">
+            <div class="panel-title">차량 상태 경고등</div>
+            <div class="grid-icons">
+                <div id="warn-parkingBrake" class="icon-box">주차브레이크</div>
+                <div id="warn-fuel" class="icon-box">연료 부족</div>
+                <div id="warn-adblue" class="icon-box">요소수 부족</div>
+                <div id="warn-airPressure" class="icon-box">에어 압력</div>
+                <div id="warn-oilPressure" class="icon-box">오일 압력</div>
+                <div id="warn-waterTemp" class="icon-box">냉각수온</div>
+                <div id="warn-battery" class="icon-box">배터리전압</div>
+                <div id="warn-damage" class="icon-box">차량 파손</div>
+            </div>
+        </div>
+
+        <!-- 5. 내비게이션 -->
+        <div class="panel" id="panel-nav">
+            <div class="panel-title">내비게이션</div>
+            <div class="nav-grid">
+                <div style="display: flex; align-items: center; justify-content: center;" id="speed-limit-container">
+                    <div class="speed-limit-none">제한 없음</div>
+                </div>
+                <div style="display: flex; flex-direction: column; justify-content: center; gap: 8px;">
+                    <div class="info-row"><span>남은 거리</span><span id="nav-distance">0 km</span></div>
+                    <div class="info-row"><span>예상 시간</span><span id="nav-time">0분</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. 운송 작업 -->
+        <div class="panel" id="panel-job" style="grid-column: 1 / -1; display: none;">
+            <div class="panel-title">현재 운송 작업 정보</div>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <div>
+                    <div class="info-row"><span>경로</span><span id="job-route">-</span></div>
+                    <div class="info-row"><span>화물명</span><span id="job-cargo">-</span></div>
+                    <div class="info-row"><span>무게</span><span id="job-mass">0 t</span></div>
+                </div>
+                <div>
+                    <div class="info-row"><span>예상 수익</span><span id="job-income">0</span></div>
+                    <div class="info-row"><span>납품 기한</span><span id="job-delivery">0분</span></div>
+                    <div class="info-row"><span>화물 손상도</span><span id="job-damage" style="font-weight: bold;">0%</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [신규] 7. 차량 상세 제원 & 브레이크 -->
+        <div class="panel hidden" id="panel-truckinfo">
+            <div class="panel-title">차량 상세 제원 및 제동</div>
+            <div class="info-row"><span>트럭</span><span id="info-truck">-</span></div>
+            <div class="info-row"><span>차량 번호판</span><span id="info-plate">-</span></div>
+            <div class="info-row"><span>에어 압력 (PSI)</span><span id="info-air">0</span></div>
+            <div class="info-row"><span>엔진 브레이크</span><span id="info-motorbrake">OFF</span></div>
+            <div class="info-row"><span>리타더 레벨</span><span id="info-retarder">0</span></div>
+        </div>
+
+        <!-- [신규] 8. 상세 파손도 (차량+트레일러) -->
+        <div class="panel hidden" id="panel-damage">
+            <div class="panel-title">상세 파손도 상태</div>
+            <div class="gauge-item">
+                <div class="gauge-meta"><span>엔진</span><span id="dmg-engine-txt">0%</span></div>
+                <div class="gauge-outer"><div id="dmg-engine" class="gauge-inner warning"></div></div>
+            </div>
+            <div class="gauge-item">
+                <div class="gauge-meta"><span>트랜스미션</span><span id="dmg-trans-txt">0%</span></div>
+                <div class="gauge-outer"><div id="dmg-trans" class="gauge-inner warning"></div></div>
+            </div>
+            <div class="gauge-item">
+                <div class="gauge-meta"><span>섀시</span><span id="dmg-chassis-txt">0%</span></div>
+                <div class="gauge-outer"><div id="dmg-chassis" class="gauge-inner warning"></div></div>
+            </div>
+            <div class="gauge-item">
+                <div class="gauge-meta"><span>캐빈</span><span id="dmg-cabin-txt">0%</span></div>
+                <div class="gauge-outer"><div id="dmg-cabin" class="gauge-inner warning"></div></div>
+            </div>
+            <div class="gauge-item">
+                <div class="gauge-meta"><span>타이어(평균)</span><span id="dmg-wheels-txt">0%</span></div>
+                <div class="gauge-outer"><div id="dmg-wheels" class="gauge-inner warning"></div></div>
+            </div>
+            <div style="margin-top: 10px; border-top: 1px solid #2d3139; padding-top: 10px;" id="trailer-dmg-container">
+                <div class="info-row"><span id="trailer-name">트레일러 미연결</span><span id="trailer-plate">-</span></div>
+                <div class="gauge-item">
+                    <div class="gauge-meta"><span>트레일러 섀시</span><span id="dmg-trl-chassis-txt">0%</span></div>
+                    <div class="gauge-outer"><div id="dmg-trl-chassis" class="gauge-inner warning"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- [신규] 9. 운전 조작부 (페달 & 핸들) -->
+        <div class="panel hidden" id="panel-controls">
+            <div class="panel-title">운전 조작부 (입력 / 게임반영)</div>
+            <div style="display: flex; justify-content: space-around; margin-top: 10px;">
+                <div class="pedal-bar">
+                    <span style="font-size: 12px; color: var(--text-muted);">클러치</span>
+                    <div class="pedal-fill-container"><div class="pedal-fill clutch" id="ctrl-clutch"></div></div>
+                </div>
+                <div class="pedal-bar">
+                    <span style="font-size: 12px; color: var(--text-muted);">브레이크</span>
+                    <div class="pedal-fill-container"><div class="pedal-fill brake" id="ctrl-brake"></div></div>
+                </div>
+                <div class="pedal-bar">
+                    <span style="font-size: 12px; color: var(--text-muted);">엑셀</span>
+                    <div class="pedal-fill-container"><div class="pedal-fill throttle" id="ctrl-throttle"></div></div>
+                </div>
+            </div>
+            <div style="text-align: center; margin-top: 15px;">
+                <span style="font-size: 12px; color: var(--text-muted);">스티어링 휠</span>
+                <div class="steering-container">
+                    <div class="steering-indicator" id="ctrl-steer"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 토스트 알림 컨테이너 -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- UI 설정 모달 -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal-content">
+            <h3 style="margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">표시할 패널 설정</h3>
+            
+            <div class="setting-item"><label for="chk-cluster">주행 클러스터</label><input type="checkbox" id="chk-cluster" class="panel-toggle" data-target="panel-cluster"></div>
+            <div class="setting-item"><label for="chk-fuel">연료 및 소모품</label><input type="checkbox" id="chk-fuel" class="panel-toggle" data-target="panel-fuel"></div>
+            <div class="setting-item"><label for="chk-lights">라이트 상태</label><input type="checkbox" id="chk-lights" class="panel-toggle" data-target="panel-lights"></div>
+            <div class="setting-item"><label for="chk-warnings">차량 경고등</label><input type="checkbox" id="chk-warnings" class="panel-toggle" data-target="panel-warnings"></div>
+            <div class="setting-item"><label for="chk-nav">내비게이션</label><input type="checkbox" id="chk-nav" class="panel-toggle" data-target="panel-nav"></div>
+            
+            <div class="setting-item"><label for="chk-truckinfo">차량 상세 제원 & 제동 <sup>(신규)</sup></label><input type="checkbox" id="chk-truckinfo" class="panel-toggle" data-target="panel-truckinfo"></div>
+            <div class="setting-item"><label for="chk-damage">상세 파손도 상태 <sup>(신규)</sup></label><input type="checkbox" id="chk-damage" class="panel-toggle" data-target="panel-damage"></div>
+            <div class="setting-item"><label for="chk-controls">페달 및 핸들 조작 <sup>(신규)</sup></label><input type="checkbox" id="chk-controls" class="panel-toggle" data-target="panel-controls"></div>
+
+            <button class="btn-settings" style="width: 100%; margin-top: 20px; padding: 10px;" onclick="closeSettings()">저장 및 닫기</button>
+        </div>
+    </div>
+
+    <script>
+        // --- 설정 관리 (LocalStorage) ---
+        const defaultSettings = {
+            "panel-cluster": true, "panel-fuel": true, "panel-lights": true, 
+            "panel-warnings": true, "panel-nav": true, 
+            "panel-truckinfo": false, "panel-damage": false, "panel-controls": false
+        };
+
+        function loadSettings() {
+            const saved = JSON.parse(localStorage.getItem('dashboard_settings') || 'null') || defaultSettings;
+            document.querySelectorAll('.panel-toggle').forEach(chk => {
+                const targetId = chk.getAttribute('data-target');
+                chk.checked = saved[targetId] !== undefined ? saved[targetId] : defaultSettings[targetId];
+                chk.addEventListener('change', saveSettings);
+                applyVisibility(targetId, chk.checked);
+            });
+        }
+
+        function saveSettings() {
+            const current = {};
+            document.querySelectorAll('.panel-toggle').forEach(chk => {
+                const targetId = chk.getAttribute('data-target');
+                current[targetId] = chk.checked;
+                applyVisibility(targetId, chk.checked);
+            });
+            localStorage.setItem('dashboard_settings', JSON.stringify(current));
+        }
+
+        function applyVisibility(id, isVisible) {
+            const el = document.getElementById(id);
+            if(el) { if(isVisible) el.classList.remove('hidden'); else el.classList.add('hidden'); }
+        }
+
+        function openSettings() { document.getElementById('settings-modal').classList.add('active'); }
+        function closeSettings() { document.getElementById('settings-modal').classList.remove('active'); }
+
+        // --- 헬퍼 함수 ---
+        function formatTime(m) { if(m<0) return "초과 "+Math.abs(m)+"분"; const h=Math.floor(m/60); return h>0?`${h}시간 ${m%60}분`:`${m}분`; }
+        function formatSec(s) { const h=Math.floor(s/3600), m=Math.floor((s%3600)/60); return h>0?`${h}시간 ${m}분`:`${m}분`; }
+        
+        // --- 이벤트 트래킹 ---
+        let prevEvents = {};
+        function checkEvents(events) {
+            if(!events) return;
+            // False -> True 로 바뀔 때만 토스트 띄우기
+            if(events.fined && !prevEvents.fined) showToast("🚨 과속/법규 위반 벌금이 부과되었습니다!", "#ef4444");
+            if(events.tollgate && !prevEvents.tollgate) showToast("💳 톨게이트 요금이 결제되었습니다.", "#3b82f6");
+            if(events.ferry && !prevEvents.ferry) showToast("🚢 페리에 탑승했습니다.", "#10b981");
+            if(events.train && !prevEvents.train) showToast("🚆 유로터널/열차에 탑승했습니다.", "#10b981");
+            if(events.refuelPayed && !prevEvents.refuelPayed) showToast("⛽ 주유 결제가 완료되었습니다.", "#f59e0b");
+            if(events.jobDelivered && !prevEvents.jobDelivered) showToast("📦 화물 배달을 성공적으로 완료했습니다!", "#10b981");
+            prevEvents = {...events};
+        }
+
+        function showToast(msg, color) {
+            const container = document.getElementById("toast-container");
+            const toast = document.createElement("div");
+            toast.className = "toast";
+            toast.style.backgroundColor = color || "var(--accent-blue)";
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => { if(toast.parentNode) toast.parentNode.removeChild(toast); }, 4500);
+        }
+
+        // --- 메인 업데이트 로직 ---
+        function updateUI(data) {
+            if (!data || !data.system) return;
+
+            document.getElementById("connection-status").className = data.system.sdkActive ? "connected" : "disconnected";
+            document.getElementById("sdk-status").textContent = data.system.sdkActive ? "SDK ON" : "SDK OFF";
+            document.getElementById("sdk-status").className = data.system.sdkActive ? "badge active" : "badge";
+            document.getElementById("paused-badge").style.display = data.system.gamePaused ? "inline-block" : "none";
+
+            if (!data.system.sdkActive) return;
+
+            document.getElementById("game-title").textContent = data.system.game || "ETS2/ATS";
+
+            const t = data.truck;
+            // 1. Cluster
+            document.getElementById("truck-speed").textContent = Math.round(t.speed.kph);
+            document.getElementById("truck-gear").textContent = t.gear.displayed > 0 ? t.gear.displayed : (t.gear.displayed === 0 ? "N" : "R" + Math.abs(t.gear.displayed));
+            document.getElementById("truck-rpm-text").textContent = `${Math.round(t.rpm)} / ${Math.round(t.config.maxRpm)}`;
+            document.getElementById("truck-rpm-bar").style.width = `${Math.min((t.rpm / t.config.maxRpm)*100, 100)}%`;
+            document.getElementById("cruise-status").textContent = t.cruiseControl.active ? `${Math.round(t.cruiseControl.speedKph)} km/h` : "OFF";
+            document.getElementById("cruise-status").style.color = t.cruiseControl.active ? "var(--accent-green)" : "var(--text-muted)";
+
+            // 2. Fuel
+            document.getElementById("fuel-text").textContent = `${Math.round(t.fuel.amount)}L (잔여 ${Math.round(t.fuel.range)}km)`;
+            document.getElementById("fuel-bar").style.width = `${Math.min((t.fuel.amount/t.fuel.capacity)*100,100)}%`;
+            document.getElementById("fuel-bar").className = t.fuel.warning ? "gauge-inner warning" : "gauge-inner";
+            document.getElementById("adblue-text").textContent = `${Math.round(t.adblue.amount)}L`;
+            document.getElementById("adblue-bar").style.width = `${Math.min((t.adblue.amount/t.adblue.capacity)*100,100)}%`;
+            document.getElementById("adblue-bar").className = t.adblue.warning ? "gauge-inner warning" : "gauge-inner";
+            document.getElementById("truck-odometer").textContent = t.odometer.toFixed(1) + " km";
+
+            // 3. Lights & 4. Warnings
+            const toggle = (id, act, cls) => { const el = document.getElementById(id); el.className="icon-box"; if(act) el.classList.add(cls); };
+            toggle("light-parking", t.lights.parking, "active-green");
+            toggle("light-beamLow", t.lights.beamLow, "active-green");
+            toggle("light-beamHigh", t.lights.beamHigh, "active-blue");
+            toggle("light-beacon", t.lights.beacon, "active-orange");
+            toggle("light-blinkerLeft", t.lights.blinkerLeft.on, "active-green");
+            toggle("light-blinkerRight", t.lights.blinkerRight.on, "active-green");
+            toggle("light-hazard", t.lights.hazard, "active-orange");
+            toggle("light-wipers", t.wipers, "active-blue");
+
+            toggle("warn-parkingBrake", t.brake.parkingBrake, "active-red");
+            toggle("warn-fuel", t.fuel.warning, "active-red");
+            toggle("warn-adblue", t.adblue.warning, "active-orange");
+            toggle("warn-airPressure", t.brake.airPressureWarning, "active-red");
+            toggle("warn-oilPressure", t.warnings.oilPressure, "active-red");
+            toggle("warn-waterTemp", t.warnings.waterTemperature, "active-red");
+            toggle("warn-battery", t.warnings.batteryVoltage, "active-red");
+            toggle("warn-damage", (t.damage.engine>0.05||t.damage.transmission>0.05), "active-orange");
+
+            // 5. Nav
+            const nav = data.navigation;
+            document.getElementById("speed-limit-container").innerHTML = nav.speedLimitKph>0 ? `<div class="speed-limit-sign">${Math.round(nav.speedLimitKph)}</div>` : `<div class="speed-limit-none">제한 없음</div>`;
+            document.getElementById("nav-distance").textContent = nav.distanceM >= 1000 ? (nav.distanceM/1000).toFixed(1)+" km" : Math.round(nav.distanceM)+" m";
+            document.getElementById("nav-time").textContent = formatSec(nav.timeRemainingSec);
+
+            // 6. Job
+            const jobPanel = document.getElementById("panel-job");
+            if (data.job && data.job.onJob) {
+                jobPanel.style.display = "flex";
+                document.getElementById("job-route").textContent = `${data.job.source.city} → ${data.job.destination.city}`;
+                document.getElementById("job-cargo").textContent = data.job.cargo.name;
+                document.getElementById("job-mass").textContent = (data.job.cargo.massKg/1000).toFixed(1) + " t";
+                document.getElementById("job-income").textContent = data.job.income.toLocaleString();
+                document.getElementById("job-delivery").textContent = formatTime(data.job.deliveryTime.remainingMin);
+                document.getElementById("job-damage").textContent = (data.job.cargo.damage*100).toFixed(1)+"%";
+            } else {
+                jobPanel.style.display = "none";
+            }
+
+            // 7. Truck Info (New)
+            document.getElementById("info-truck").textContent = `${t.config.truckBrand} ${t.config.truckModel}`;
+            document.getElementById("info-plate").textContent = t.config.licensePlate;
+            document.getElementById("info-air").textContent = t.brake.airPressure.toFixed(1);
+            document.getElementById("info-motorbrake").textContent = t.brake.motorBrake ? "ON" : "OFF";
+            document.getElementById("info-motorbrake").style.color = t.brake.motorBrake ? "var(--accent-green)" : "var(--text-muted)";
+            document.getElementById("info-retarder").textContent = t.brake.retarderLevel > 0 ? `Level ${t.brake.retarderLevel}` : "OFF";
+
+            // 8. Damage (New)
+            const setDmg = (id, val) => {
+                const pct = (val*100);
+                document.getElementById(id+"-txt").textContent = pct.toFixed(1)+"%";
+                document.getElementById(id).style.width = `${Math.min(pct,100)}%`;
+                document.getElementById(id).style.background = pct > 10 ? "var(--accent-red)" : "var(--accent-orange)";
+            };
+            setDmg("dmg-engine", t.damage.engine);
+            setDmg("dmg-trans", t.damage.transmission);
+            setDmg("dmg-chassis", t.damage.chassis);
+            setDmg("dmg-cabin", t.damage.cabin);
+            setDmg("dmg-wheels", t.damage.wheelsAvg);
+
+            const trl = data.trailers && data.trailers.length > 0 ? data.trailers[0] : null;
+            if (trl && trl.attached) {
+                document.getElementById("trailer-name").textContent = trl.name || "트레일러";
+                document.getElementById("trailer-plate").textContent = trl.licensePlate || "";
+                setDmg("dmg-trl-chassis", trl.damage.chassis);
+            } else {
+                document.getElementById("trailer-name").textContent = "트레일러 미연결";
+                document.getElementById("trailer-plate").textContent = "";
+                setDmg("dmg-trl-chassis", 0);
+            }
+
+            // 9. Controls (New)
+            const c = data.controls.game; // game applied values
+            document.getElementById("ctrl-throttle").style.height = `${c.throttle*100}%`;
+            document.getElementById("ctrl-brake").style.height = `${c.brake*100}%`;
+            document.getElementById("ctrl-clutch").style.height = `${c.clutch*100}%`;
+            // steering is -1 to 1. Map to 0% to 100% left property
+            const steerPos = ((c.steering + 1) / 2) * 100;
+            document.getElementById("ctrl-steer").style.left = `${steerPos}%`;
+
+            // Check events
+            checkEvents(data.events);
+        }
+
+        // --- WebSocket ---
+        function connect() {
+            const ws = new WebSocket("ws://127.0.0.1:25555/");
+            ws.onopen = () => { 
+                document.getElementById("ws-status").textContent = "서버 연결됨"; 
+                document.getElementById("ws-status").className = "badge active"; 
+            };
+            ws.onmessage = (e) => { try { updateUI(JSON.parse(e.data)); } catch(err){} };
+            ws.onclose = () => {
+                document.getElementById("connection-status").className = "disconnected";
+                document.getElementById("ws-status").textContent = "재연결 중...";
+                document.getElementById("ws-status").className = "badge warning";
+                document.getElementById("sdk-status").textContent = "SDK OFF";
+                document.getElementById("sdk-status").className = "badge";
+                setTimeout(connect, 3000);
+            };
+        }
+
+        loadSettings();
+        connect();
+    </script>
+</body>
+</html>

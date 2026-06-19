@@ -1,379 +1,414 @@
-﻿namespace SCSSdkClient.Demo
-{
-   partial class SCSSdkClientDemo
-    {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
+namespace SCSSdkClient.Demo {
+    partial class SCSSdkClientDemo {
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing && (components != null))
-            {
-                components.Dispose();
-            }
+        protected override void Dispose(bool disposing) {
+            if (disposing && (components != null)) components.Dispose();
             base.Dispose(disposing);
         }
 
         #region Windows Form Designer generated code
-
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
-        private void InitializeComponent()
-        {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SCSSdkClientDemo));
-            this.hgf = new System.Windows.Forms.TabControl();
-            this.tabAbout = new SCSSdkClient.Demo.CustomTabPage();
-            this.rtb_fuel = new System.Windows.Forms.RichTextBox();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.l_updateRate = new System.Windows.Forms.ToolStripStatusLabel();
-            this.lbGeneral = new System.Windows.Forms.RichTextBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.lblDemo = new System.Windows.Forms.Label();
-            this.tabPage1 = new SCSSdkClient.Demo.CustomTabPage();
-            this.common = new System.Windows.Forms.RichTextBox();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.truck = new System.Windows.Forms.RichTextBox();
-            this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.trailer = new System.Windows.Forms.RichTextBox();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.job = new System.Windows.Forms.RichTextBox();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.control = new System.Windows.Forms.RichTextBox();
-            this.tabPage6 = new System.Windows.Forms.TabPage();
-            this.navigation = new System.Windows.Forms.RichTextBox();
-            this.tabPage7 = new System.Windows.Forms.TabPage();
-            this.substances = new System.Windows.Forms.RichTextBox();
-            this.tabPage8 = new System.Windows.Forms.TabPage();
-            this.gameplayevent = new System.Windows.Forms.RichTextBox();
-            this.hgf.SuspendLayout();
-            this.tabAbout.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            this.tabPage3.SuspendLayout();
-            this.tabPage4.SuspendLayout();
-            this.tabPage5.SuspendLayout();
-            this.tabPage6.SuspendLayout();
-            this.tabPage7.SuspendLayout();
-            this.tabPage8.SuspendLayout();
+        private void InitializeComponent() {
+            this.components = new System.ComponentModel.Container();
+            this.timerUI = new System.Windows.Forms.Timer(this.components);
+            this.panelTop = new System.Windows.Forms.Panel();
+            this.lblTitle = new System.Windows.Forms.Label();
+            this.btnOpenDashboard = new System.Windows.Forms.Button();
+            this.btnConnect = new System.Windows.Forms.Button();
+            this.btnDisconnect = new System.Windows.Forms.Button();
+            this.panelStatus = new System.Windows.Forms.Panel();
+            this.panelSdkLight = new System.Windows.Forms.Panel();
+            this.lblSdkLight = new System.Windows.Forms.Label();
+            this.panelGameLight = new System.Windows.Forms.Panel();
+            this.lblGameLight = new System.Windows.Forms.Label();
+            this.panelWsLight = new System.Windows.Forms.Panel();
+            this.lblWsLight = new System.Windows.Forms.Label();
+            this.panelPausedLight = new System.Windows.Forms.Panel();
+            this.lblPausedLight = new System.Windows.Forms.Label();
+            this.panelStats = new System.Windows.Forms.Panel();
+            this.lblStatSpeed = new System.Windows.Forms.Label();
+            this.lblStatRpm = new System.Windows.Forms.Label();
+            this.lblStatGear = new System.Windows.Forms.Label();
+            this.lblStatFuel = new System.Windows.Forms.Label();
+            this.lblStatClients = new System.Windows.Forms.Label();
+            this.lblStatUpdateRate = new System.Windows.Forms.Label();
+            this.panelLog = new System.Windows.Forms.Panel();
+            this.rtbLog = new System.Windows.Forms.RichTextBox();
+            this.btnClearLog = new System.Windows.Forms.Button();
+            this.panelTop.SuspendLayout();
+            this.panelStatus.SuspendLayout();
+            this.panelStats.SuspendLayout();
+            this.panelLog.SuspendLayout();
             this.SuspendLayout();
             // 
-            // hgf
+            // timerUI
             // 
-            this.hgf.Controls.Add(this.tabAbout);
-            this.hgf.Controls.Add(this.tabPage1);
-            this.hgf.Controls.Add(this.tabPage2);
-            this.hgf.Controls.Add(this.tabPage3);
-            this.hgf.Controls.Add(this.tabPage4);
-            this.hgf.Controls.Add(this.tabPage5);
-            this.hgf.Controls.Add(this.tabPage6);
-            this.hgf.Controls.Add(this.tabPage7);
-            this.hgf.Controls.Add(this.tabPage8);
-            this.hgf.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hgf.Location = new System.Drawing.Point(0, 0);
-            this.hgf.Name = "hgf";
-            this.hgf.SelectedIndex = 0;
-            this.hgf.Size = new System.Drawing.Size(595, 621);
-            this.hgf.TabIndex = 0;
+            this.timerUI.Interval = 500;
+            this.timerUI.Tick += new System.EventHandler(this.timerUI_Tick);
             // 
-            // tabAbout
+            // panelTop
             // 
-            this.tabAbout.Controls.Add(this.rtb_fuel);
-            this.tabAbout.Controls.Add(this.statusStrip1);
-            this.tabAbout.Controls.Add(this.lbGeneral);
-            this.tabAbout.Controls.Add(this.richTextBox1);
-            this.tabAbout.Controls.Add(this.lblDemo);
-            this.tabAbout.Location = new System.Drawing.Point(4, 22);
-            this.tabAbout.Name = "tabAbout";
-            this.tabAbout.Padding = new System.Windows.Forms.Padding(3);
-            this.tabAbout.Size = new System.Drawing.Size(587, 595);
-            this.tabAbout.TabIndex = 0;
-            this.tabAbout.Text = "About";
-            this.tabAbout.UseVisualStyleBackColor = true;
+            this.panelTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(17)))), ((int)(((byte)(23)))));
+            this.panelTop.Controls.Add(this.lblTitle);
+            this.panelTop.Controls.Add(this.btnClearLog);
+            this.panelTop.Controls.Add(this.btnOpenDashboard);
+            this.panelTop.Controls.Add(this.btnConnect);
+            this.panelTop.Controls.Add(this.btnDisconnect);
+            this.panelTop.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelTop.Location = new System.Drawing.Point(0, 0);
+            this.panelTop.Name = "panelTop";
+            this.panelTop.Padding = new System.Windows.Forms.Padding(16, 10, 16, 10);
+            this.panelTop.Size = new System.Drawing.Size(680, 103);
+            this.panelTop.TabIndex = 3;
             // 
-            // rtb_fuel
+            // lblTitle
             // 
-            this.rtb_fuel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.rtb_fuel.Location = new System.Drawing.Point(20, 512);
-            this.rtb_fuel.Name = "rtb_fuel";
-            this.rtb_fuel.Size = new System.Drawing.Size(549, 36);
-            this.rtb_fuel.TabIndex = 4;
-            this.rtb_fuel.Text = "";
+            this.lblTitle.AutoSize = true;
+            this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+            this.lblTitle.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(88)))), ((int)(((byte)(166)))), ((int)(((byte)(255)))));
+            this.lblTitle.Location = new System.Drawing.Point(16, 10);
+            this.lblTitle.Name = "lblTitle";
+            this.lblTitle.Size = new System.Drawing.Size(372, 25);
+            this.lblTitle.TabIndex = 0;
+            this.lblTitle.Text = "ETS2 / ATS  Telemetry WebSocket Server";
             // 
-            // statusStrip1
+            // btnOpenDashboard
             // 
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1,
-            this.l_updateRate});
-            this.statusStrip1.Location = new System.Drawing.Point(3, 570);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(581, 22);
-            this.statusStrip1.TabIndex = 3;
-            this.statusStrip1.Text = "statusStrip1";
+            this.btnOpenDashboard.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(31)))), ((int)(((byte)(111)))), ((int)(((byte)(235)))));
+            this.btnOpenDashboard.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnOpenDashboard.FlatAppearance.BorderSize = 0;
+            this.btnOpenDashboard.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnOpenDashboard.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnOpenDashboard.ForeColor = System.Drawing.Color.White;
+            this.btnOpenDashboard.Location = new System.Drawing.Point(285, 38);
+            this.btnOpenDashboard.Name = "btnOpenDashboard";
+            this.btnOpenDashboard.Size = new System.Drawing.Size(140, 36);
+            this.btnOpenDashboard.TabIndex = 1;
+            this.btnOpenDashboard.Text = "🌐 웹 대시보드 열기";
+            this.btnOpenDashboard.UseVisualStyleBackColor = false;
+            this.btnOpenDashboard.Click += new System.EventHandler(this.btnOpenDashboard_Click);
             // 
-            // toolStripStatusLabel1
+            // btnConnect
             // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(113, 17);
-            this.toolStripStatusLabel1.Text = "Current update rate:";
+            this.btnConnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(35)))), ((int)(((byte)(134)))), ((int)(((byte)(54)))));
+            this.btnConnect.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnConnect.FlatAppearance.BorderSize = 0;
+            this.btnConnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnConnect.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnConnect.ForeColor = System.Drawing.Color.White;
+            this.btnConnect.Location = new System.Drawing.Point(440, 38);
+            this.btnConnect.Name = "btnConnect";
+            this.btnConnect.Size = new System.Drawing.Size(110, 36);
+            this.btnConnect.TabIndex = 2;
+            this.btnConnect.Text = "▶  연결 시작";
+            this.btnConnect.UseVisualStyleBackColor = false;
+            this.btnConnect.Click += new System.EventHandler(this.btnConnect_Click);
             // 
-            // l_updateRate
+            // btnDisconnect
             // 
-            this.l_updateRate.Name = "l_updateRate";
-            this.l_updateRate.Size = new System.Drawing.Size(0, 17);
+            this.btnDisconnect.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(35)))), ((int)(((byte)(35)))));
+            this.btnDisconnect.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnDisconnect.Enabled = false;
+            this.btnDisconnect.FlatAppearance.BorderSize = 0;
+            this.btnDisconnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnDisconnect.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnDisconnect.ForeColor = System.Drawing.Color.White;
+            this.btnDisconnect.Location = new System.Drawing.Point(558, 38);
+            this.btnDisconnect.Name = "btnDisconnect";
+            this.btnDisconnect.Size = new System.Drawing.Size(110, 36);
+            this.btnDisconnect.TabIndex = 3;
+            this.btnDisconnect.Text = "■  연결 해제";
+            this.btnDisconnect.UseVisualStyleBackColor = false;
+            this.btnDisconnect.Click += new System.EventHandler(this.btnDisconnect_Click);
             // 
-            // lbGeneral
+            // panelStatus
             // 
-            this.lbGeneral.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.lbGeneral.Location = new System.Drawing.Point(20, 210);
-            this.lbGeneral.Name = "lbGeneral";
-            this.lbGeneral.Size = new System.Drawing.Size(549, 295);
-            this.lbGeneral.TabIndex = 2;
-            this.lbGeneral.Text = "";
+            this.panelStatus.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(35)))), ((int)(((byte)(43)))));
+            this.panelStatus.Controls.Add(this.panelSdkLight);
+            this.panelStatus.Controls.Add(this.lblSdkLight);
+            this.panelStatus.Controls.Add(this.panelGameLight);
+            this.panelStatus.Controls.Add(this.lblGameLight);
+            this.panelStatus.Controls.Add(this.panelWsLight);
+            this.panelStatus.Controls.Add(this.lblWsLight);
+            this.panelStatus.Controls.Add(this.panelPausedLight);
+            this.panelStatus.Controls.Add(this.lblPausedLight);
+            this.panelStatus.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelStatus.Location = new System.Drawing.Point(0, 103);
+            this.panelStatus.Name = "panelStatus";
+            this.panelStatus.Padding = new System.Windows.Forms.Padding(16, 0, 16, 0);
+            this.panelStatus.Size = new System.Drawing.Size(680, 60);
+            this.panelStatus.TabIndex = 2;
             // 
-            // richTextBox1
+            // panelSdkLight
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(20, 61);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(549, 122);
-            this.richTextBox1.TabIndex = 1;
-            this.richTextBox1.Text = resources.GetString("richTextBox1.Text");
+            this.panelSdkLight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.panelSdkLight.Location = new System.Drawing.Point(20, 24);
+            this.panelSdkLight.Name = "panelSdkLight";
+            this.panelSdkLight.Size = new System.Drawing.Size(12, 12);
+            this.panelSdkLight.TabIndex = 0;
             // 
-            // lblDemo
+            // lblSdkLight
             // 
-            this.lblDemo.AutoSize = true;
-            this.lblDemo.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblDemo.Location = new System.Drawing.Point(132, 33);
-            this.lblDemo.Name = "lblDemo";
-            this.lblDemo.Size = new System.Drawing.Size(336, 25);
-            this.lblDemo.TabIndex = 0;
-            this.lblDemo.Text = "ETS2 SDK Telemetry C# Demo";
+            this.lblSdkLight.AutoSize = true;
+            this.lblSdkLight.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblSdkLight.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(148)))), ((int)(((byte)(158)))));
+            this.lblSdkLight.Location = new System.Drawing.Point(38, 21);
+            this.lblSdkLight.Name = "lblSdkLight";
+            this.lblSdkLight.Size = new System.Drawing.Size(79, 15);
+            this.lblSdkLight.TabIndex = 1;
+            this.lblSdkLight.Text = "SDK 플러그인";
             // 
-            // tabPage1
+            // panelGameLight
             // 
-            this.tabPage1.Controls.Add(this.common);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(587, 595);
-            this.tabPage1.TabIndex = 1;
-            this.tabPage1.Text = "Common";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.panelGameLight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.panelGameLight.Location = new System.Drawing.Point(160, 24);
+            this.panelGameLight.Name = "panelGameLight";
+            this.panelGameLight.Size = new System.Drawing.Size(12, 12);
+            this.panelGameLight.TabIndex = 2;
             // 
-            // common
+            // lblGameLight
             // 
-            this.common.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.common.Location = new System.Drawing.Point(3, 3);
-            this.common.Name = "common";
-            this.common.Size = new System.Drawing.Size(581, 589);
-            this.common.TabIndex = 3;
-            this.common.Text = "";
+            this.lblGameLight.AutoSize = true;
+            this.lblGameLight.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblGameLight.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(148)))), ((int)(((byte)(158)))));
+            this.lblGameLight.Location = new System.Drawing.Point(178, 21);
+            this.lblGameLight.Name = "lblGameLight";
+            this.lblGameLight.Size = new System.Drawing.Size(58, 15);
+            this.lblGameLight.TabIndex = 3;
+            this.lblGameLight.Text = "게임 연결";
             // 
-            // tabPage2
+            // panelWsLight
             // 
-            this.tabPage2.Controls.Add(this.truck);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(587, 595);
-            this.tabPage2.TabIndex = 2;
-            this.tabPage2.Text = "Truck";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.panelWsLight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.panelWsLight.Location = new System.Drawing.Point(300, 24);
+            this.panelWsLight.Name = "panelWsLight";
+            this.panelWsLight.Size = new System.Drawing.Size(12, 12);
+            this.panelWsLight.TabIndex = 4;
             // 
-            // truck
+            // lblWsLight
             // 
-            this.truck.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.truck.Location = new System.Drawing.Point(3, 3);
-            this.truck.Name = "truck";
-            this.truck.Size = new System.Drawing.Size(581, 589);
-            this.truck.TabIndex = 4;
-            this.truck.Text = "";
+            this.lblWsLight.AutoSize = true;
+            this.lblWsLight.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblWsLight.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(148)))), ((int)(((byte)(158)))));
+            this.lblWsLight.Location = new System.Drawing.Point(318, 21);
+            this.lblWsLight.Name = "lblWsLight";
+            this.lblWsLight.Size = new System.Drawing.Size(93, 15);
+            this.lblWsLight.TabIndex = 5;
+            this.lblWsLight.Text = "WebSocket 서버";
             // 
-            // tabPage3
+            // panelPausedLight
             // 
-            this.tabPage3.Controls.Add(this.trailer);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
-            this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(587, 595);
-            this.tabPage3.TabIndex = 3;
-            this.tabPage3.Text = "Trailer";
-            this.tabPage3.UseVisualStyleBackColor = true;
+            this.panelPausedLight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(68)))), ((int)(((byte)(68)))), ((int)(((byte)(68)))));
+            this.panelPausedLight.Location = new System.Drawing.Point(460, 24);
+            this.panelPausedLight.Name = "panelPausedLight";
+            this.panelPausedLight.Size = new System.Drawing.Size(12, 12);
+            this.panelPausedLight.TabIndex = 6;
             // 
-            // trailer
+            // lblPausedLight
             // 
-            this.trailer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.trailer.Location = new System.Drawing.Point(3, 3);
-            this.trailer.Name = "trailer";
-            this.trailer.Size = new System.Drawing.Size(581, 589);
-            this.trailer.TabIndex = 4;
-            this.trailer.Text = "";
+            this.lblPausedLight.AutoSize = true;
+            this.lblPausedLight.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblPausedLight.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(148)))), ((int)(((byte)(158)))));
+            this.lblPausedLight.Location = new System.Drawing.Point(478, 21);
+            this.lblPausedLight.Name = "lblPausedLight";
+            this.lblPausedLight.Size = new System.Drawing.Size(82, 15);
+            this.lblPausedLight.TabIndex = 7;
+            this.lblPausedLight.Text = "게임 일시정지";
             // 
-            // tabPage4
+            // panelStats
             // 
-            this.tabPage4.Controls.Add(this.job);
-            this.tabPage4.Location = new System.Drawing.Point(4, 22);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage4.Size = new System.Drawing.Size(587, 595);
-            this.tabPage4.TabIndex = 4;
-            this.tabPage4.Text = "Job";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.panelStats.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(27)))), ((int)(((byte)(34)))));
+            this.panelStats.Controls.Add(this.lblStatSpeed);
+            this.panelStats.Controls.Add(this.lblStatRpm);
+            this.panelStats.Controls.Add(this.lblStatGear);
+            this.panelStats.Controls.Add(this.lblStatFuel);
+            this.panelStats.Controls.Add(this.lblStatClients);
+            this.panelStats.Controls.Add(this.lblStatUpdateRate);
+            this.panelStats.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelStats.Location = new System.Drawing.Point(0, 163);
+            this.panelStats.Name = "panelStats";
+            this.panelStats.Padding = new System.Windows.Forms.Padding(16, 8, 16, 8);
+            this.panelStats.Size = new System.Drawing.Size(680, 90);
+            this.panelStats.TabIndex = 1;
             // 
-            // job
+            // lblStatSpeed
             // 
-            this.job.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.job.Location = new System.Drawing.Point(3, 3);
-            this.job.Name = "job";
-            this.job.Size = new System.Drawing.Size(581, 589);
-            this.job.TabIndex = 4;
-            this.job.Text = "";
+            this.lblStatSpeed.AutoSize = true;
+            this.lblStatSpeed.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblStatSpeed.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(209)))), ((int)(((byte)(217)))));
+            this.lblStatSpeed.Location = new System.Drawing.Point(10, 8);
+            this.lblStatSpeed.Name = "lblStatSpeed";
+            this.lblStatSpeed.Size = new System.Drawing.Size(77, 15);
+            this.lblStatSpeed.TabIndex = 0;
+            this.lblStatSpeed.Text = "속도: -  km/h";
             // 
-            // tabPage5
+            // lblStatRpm
             // 
-            this.tabPage5.Controls.Add(this.control);
-            this.tabPage5.Location = new System.Drawing.Point(4, 22);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage5.Size = new System.Drawing.Size(587, 595);
-            this.tabPage5.TabIndex = 5;
-            this.tabPage5.Text = "Control";
-            this.tabPage5.UseVisualStyleBackColor = true;
+            this.lblStatRpm.AutoSize = true;
+            this.lblStatRpm.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblStatRpm.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(209)))), ((int)(((byte)(217)))));
+            this.lblStatRpm.Location = new System.Drawing.Point(140, 8);
+            this.lblStatRpm.Name = "lblStatRpm";
+            this.lblStatRpm.Size = new System.Drawing.Size(43, 15);
+            this.lblStatRpm.TabIndex = 1;
+            this.lblStatRpm.Text = "RPM: -";
             // 
-            // control
+            // lblStatGear
             // 
-            this.control.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.control.Location = new System.Drawing.Point(3, 3);
-            this.control.Name = "control";
-            this.control.Size = new System.Drawing.Size(581, 589);
-            this.control.TabIndex = 4;
-            this.control.Text = "";
+            this.lblStatGear.AutoSize = true;
+            this.lblStatGear.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblStatGear.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(209)))), ((int)(((byte)(217)))));
+            this.lblStatGear.Location = new System.Drawing.Point(260, 8);
+            this.lblStatGear.Name = "lblStatGear";
+            this.lblStatGear.Size = new System.Drawing.Size(46, 15);
+            this.lblStatGear.TabIndex = 2;
+            this.lblStatGear.Text = "기어: N";
             // 
-            // tabPage6
+            // lblStatFuel
             // 
-            this.tabPage6.Controls.Add(this.navigation);
-            this.tabPage6.Location = new System.Drawing.Point(4, 22);
-            this.tabPage6.Name = "tabPage6";
-            this.tabPage6.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage6.Size = new System.Drawing.Size(587, 595);
-            this.tabPage6.TabIndex = 6;
-            this.tabPage6.Text = "Navigation";
-            this.tabPage6.UseVisualStyleBackColor = true;
+            this.lblStatFuel.AutoSize = true;
+            this.lblStatFuel.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblStatFuel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(209)))), ((int)(((byte)(217)))));
+            this.lblStatFuel.Location = new System.Drawing.Point(360, 8);
+            this.lblStatFuel.Name = "lblStatFuel";
+            this.lblStatFuel.Size = new System.Drawing.Size(51, 15);
+            this.lblStatFuel.TabIndex = 3;
+            this.lblStatFuel.Text = "연료: - L";
             // 
-            // navigation
+            // lblStatClients
             // 
-            this.navigation.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.navigation.Location = new System.Drawing.Point(3, 3);
-            this.navigation.Name = "navigation";
-            this.navigation.Size = new System.Drawing.Size(581, 589);
-            this.navigation.TabIndex = 4;
-            this.navigation.Text = "";
+            this.lblStatClients.AutoSize = true;
+            this.lblStatClients.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblStatClients.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(209)))), ((int)(((byte)(217)))));
+            this.lblStatClients.Location = new System.Drawing.Point(490, 8);
+            this.lblStatClients.Name = "lblStatClients";
+            this.lblStatClients.Size = new System.Drawing.Size(129, 15);
+            this.lblStatClients.TabIndex = 4;
+            this.lblStatClients.Text = "HTML 클라이언트: 0 개";
             // 
-            // tabPage7
+            // lblStatUpdateRate
             // 
-            this.tabPage7.Controls.Add(this.substances);
-            this.tabPage7.Location = new System.Drawing.Point(4, 22);
-            this.tabPage7.Name = "tabPage7";
-            this.tabPage7.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage7.Size = new System.Drawing.Size(587, 595);
-            this.tabPage7.TabIndex = 7;
-            this.tabPage7.Text = "Substances";
-            this.tabPage7.UseVisualStyleBackColor = true;
+            this.lblStatUpdateRate.AutoSize = true;
+            this.lblStatUpdateRate.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblStatUpdateRate.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(209)))), ((int)(((byte)(217)))));
+            this.lblStatUpdateRate.Location = new System.Drawing.Point(10, 50);
+            this.lblStatUpdateRate.Name = "lblStatUpdateRate";
+            this.lblStatUpdateRate.Size = new System.Drawing.Size(69, 15);
+            this.lblStatUpdateRate.TabIndex = 5;
+            this.lblStatUpdateRate.Text = "갱신 주기: -";
             // 
-            // substances
+            // panelLog
             // 
-            this.substances.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.substances.Location = new System.Drawing.Point(3, 3);
-            this.substances.Name = "substances";
-            this.substances.Size = new System.Drawing.Size(581, 589);
-            this.substances.TabIndex = 5;
-            this.substances.Text = "";
+            this.panelLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(27)))), ((int)(((byte)(34)))));
+            this.panelLog.Controls.Add(this.rtbLog);
+            this.panelLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelLog.Location = new System.Drawing.Point(0, 253);
+            this.panelLog.Name = "panelLog";
+            this.panelLog.Padding = new System.Windows.Forms.Padding(16, 8, 16, 16);
+            this.panelLog.Size = new System.Drawing.Size(680, 347);
+            this.panelLog.TabIndex = 0;
             // 
-            // tabPage8
+            // rtbLog
             // 
-            this.tabPage8.Controls.Add(this.gameplayevent);
-            this.tabPage8.Location = new System.Drawing.Point(4, 22);
-            this.tabPage8.Name = "tabPage8";
-            this.tabPage8.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage8.Size = new System.Drawing.Size(587, 595);
-            this.tabPage8.TabIndex = 8;
-            this.tabPage8.Text = "GameplayEvents";
-            this.tabPage8.UseVisualStyleBackColor = true;
+            this.rtbLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(13)))), ((int)(((byte)(17)))), ((int)(((byte)(23)))));
+            this.rtbLog.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.rtbLog.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.rtbLog.Font = new System.Drawing.Font("Consolas", 9F);
+            this.rtbLog.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(201)))), ((int)(((byte)(209)))), ((int)(((byte)(217)))));
+            this.rtbLog.Location = new System.Drawing.Point(16, 8);
+            this.rtbLog.Name = "rtbLog";
+            this.rtbLog.ReadOnly = true;
+            this.rtbLog.Size = new System.Drawing.Size(648, 323);
+            this.rtbLog.TabIndex = 0;
+            this.rtbLog.Text = "";
+            this.rtbLog.WordWrap = false;
             // 
-            // gameplayevent
+            // btnClearLog
             // 
-            this.gameplayevent.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.gameplayevent.Location = new System.Drawing.Point(3, 3);
-            this.gameplayevent.Name = "gameplayevent";
-            this.gameplayevent.Size = new System.Drawing.Size(581, 589);
-            this.gameplayevent.TabIndex = 6;
-            this.gameplayevent.Text = "";
+            this.btnClearLog.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearLog.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(48)))), ((int)(((byte)(54)))), ((int)(((byte)(61)))));
+            this.btnClearLog.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.btnClearLog.FlatAppearance.BorderSize = 0;
+            this.btnClearLog.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClearLog.Font = new System.Drawing.Font("Segoe UI", 8F);
+            this.btnClearLog.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(148)))), ((int)(((byte)(158)))));
+            this.btnClearLog.Location = new System.Drawing.Point(4, 73);
+            this.btnClearLog.Name = "btnClearLog";
+            this.btnClearLog.Size = new System.Drawing.Size(83, 24);
+            this.btnClearLog.TabIndex = 1;
+            this.btnClearLog.Text = "로그 지우기";
+            this.btnClearLog.UseVisualStyleBackColor = false;
+            this.btnClearLog.Click += new System.EventHandler(this.btnClearLog_Click);
             // 
             // SCSSdkClientDemo
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(595, 621);
-            this.Controls.Add(this.hgf);
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(22)))), ((int)(((byte)(27)))), ((int)(((byte)(34)))));
+            this.ClientSize = new System.Drawing.Size(680, 600);
+            this.Controls.Add(this.panelLog);
+            this.Controls.Add(this.panelStats);
+            this.Controls.Add(this.panelStatus);
+            this.Controls.Add(this.panelTop);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(237)))), ((int)(((byte)(243)))));
+            this.MinimumSize = new System.Drawing.Size(680, 600);
             this.Name = "SCSSdkClientDemo";
-            this.Text = "SCSSDkClientDemo 0.9";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.Text = "ETS2/ATS Telemetry Server";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.SCSSdkClientDemo_FormClosing);
-            this.hgf.ResumeLayout(false);
-            this.tabAbout.ResumeLayout(false);
-            this.tabAbout.PerformLayout();
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            this.tabPage3.ResumeLayout(false);
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage5.ResumeLayout(false);
-            this.tabPage6.ResumeLayout(false);
-            this.tabPage7.ResumeLayout(false);
-            this.tabPage8.ResumeLayout(false);
+            this.panelTop.ResumeLayout(false);
+            this.panelTop.PerformLayout();
+            this.panelStatus.ResumeLayout(false);
+            this.panelStatus.PerformLayout();
+            this.panelStats.ResumeLayout(false);
+            this.panelStats.PerformLayout();
+            this.panelLog.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private CustomTabPage tabAbout;
-        private System.Windows.Forms.RichTextBox lbGeneral;
-        private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.Label lblDemo;
-        private System.Windows.Forms.TabControl hgf;
-        private CustomTabPage tabPage1;
-        private System.Windows.Forms.RichTextBox common;
-        private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.TabPage tabPage4;
-        private System.Windows.Forms.TabPage tabPage5;
-        private System.Windows.Forms.TabPage tabPage6;
-        private System.Windows.Forms.RichTextBox truck;
-        private System.Windows.Forms.RichTextBox trailer;
-        private System.Windows.Forms.RichTextBox job;
-        private System.Windows.Forms.RichTextBox control;
-        private System.Windows.Forms.RichTextBox navigation;
-        private System.Windows.Forms.TabPage tabPage7;
-        private System.Windows.Forms.RichTextBox substances;
-        private System.Windows.Forms.TabPage tabPage8;
-        private System.Windows.Forms.RichTextBox gameplayevent;
-        private System.Windows.Forms.StatusStrip statusStrip1;
-        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
-        private System.Windows.Forms.ToolStripStatusLabel l_updateRate;
-        private System.Windows.Forms.RichTextBox rtb_fuel;
+        // ── 컨트롤 선언 ──────────────────────────────────────────────────
+        private System.Windows.Forms.Timer  timerUI;
+        private System.Windows.Forms.Panel  panelTop;
+        private System.Windows.Forms.Panel  panelStatus;
+        private System.Windows.Forms.Panel  panelStats;
+        private System.Windows.Forms.Panel  panelLog;
+
+        private System.Windows.Forms.Label  lblTitle;
+        private System.Windows.Forms.Button btnOpenDashboard;
+        private System.Windows.Forms.Button btnConnect;
+        private System.Windows.Forms.Button btnDisconnect;
+
+        private System.Windows.Forms.Panel panelSdkLight;
+        private System.Windows.Forms.Panel panelGameLight;
+        private System.Windows.Forms.Panel panelWsLight;
+        private System.Windows.Forms.Panel panelPausedLight;
+        private System.Windows.Forms.Label lblSdkLight;
+        private System.Windows.Forms.Label lblGameLight;
+        private System.Windows.Forms.Label lblWsLight;
+        private System.Windows.Forms.Label lblPausedLight;
+
+        private System.Windows.Forms.Label lblStatSpeed;
+        private System.Windows.Forms.Label lblStatRpm;
+        private System.Windows.Forms.Label lblStatGear;
+        private System.Windows.Forms.Label lblStatFuel;
+        private System.Windows.Forms.Label lblStatClients;
+        private System.Windows.Forms.Label lblStatUpdateRate;
+        private System.Windows.Forms.RichTextBox rtbLog;
+        private System.Windows.Forms.Button      btnClearLog;
+
+        // 기존 코드 호환용 (삭제하면 Telemetry_Data 에서 에러)
+        private System.Windows.Forms.RichTextBox lbGeneral    = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox common       = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox truck        = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox trailer      = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox job          = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox control      = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox navigation   = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox substances   = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox gameplayevent= new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.RichTextBox rtb_fuel     = new System.Windows.Forms.RichTextBox();
+        private System.Windows.Forms.ToolStripStatusLabel l_updateRate = new System.Windows.Forms.ToolStripStatusLabel();
     }
 }
-
