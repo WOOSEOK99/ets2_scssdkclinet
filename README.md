@@ -147,7 +147,6 @@ release/
     └── scs-telemetry.dll
 ```
 
-> ⚠️ `overlay/map/` 폴더는 [ets2-mobile-route-advisor](https://github.com/mike-koch/ets2-mobile-route-advisor) 저장소에서 지도 타일과 `ol.js`를 별도로 복사해야 합니다.
 
 ---
 
@@ -316,7 +315,6 @@ release/
     └── scs-telemetry.dll
 ```
 
-> ⚠️ The `overlay/map/` folder requires map tiles and `ol.js` copied from [ets2-mobile-route-advisor](https://github.com/mike-koch/ets2-mobile-route-advisor).
 
 ---
 
