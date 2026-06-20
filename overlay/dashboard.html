@@ -709,9 +709,12 @@
         <div class="col">
             <!-- 5. 내비게이션 -->
             <div class="panel" id="panel-nav" style="flex: 2.5; display: flex; flex-direction: column; padding: 8px;">
-                <div class="panel-title" style="flex-shrink:0;">내비게이션</div>
+                <div class="panel-title" style="flex-shrink:0; display:flex; justify-content:space-between; align-items:center;">내비게이션
+                    <button id="map-track-btn" onclick="setTrackingState(!g_behavior_center_on_player)" style="font-size:11px; padding:3px 8px; border-radius:4px; border:none; cursor:pointer; background:rgba(16,185,129,0.8); color:#fff; font-weight:bold;">🎯 추적 중</button>
+                </div>
                 <!-- 지도 컨테이너 -->
-                <div id="ets2map" style="flex: 1; min-height: 0; border-radius: 6px; overflow: hidden; background: #15181e;"></div>
+                <div id="ets2map" style="flex: 1; min-height: 0; border-radius: 6px; overflow: hidden; background: #15181e; position: relative;">
+                </div>
                 <!-- 하단 정보 -->
                 <div style="flex-shrink: 0; display: flex; align-items: center; margin-top: 6px;">
                     <div class="nav-grid" style="width: 100%;">
@@ -1164,22 +1167,53 @@
         }
 
         // --- ETS2 Map (OpenLayers) ---
-        var MAX_X = 173568;
-        var MAX_Y = 192512;
+        var MAX_X = 131072;
+        var MAX_Y = 131072;
         var g_map = null;
         var g_playerFeature = null;
         var g_playerIcon = null;
         var g_behavior_center_on_player = true;
-        var g_behavior_rotate_with_player = true;
-        var g_ignore_view_change_events = false;
+        var g_tracking_paused_timer = null;
+        var g_is_programmatic_move = false;
 
-        function game_coord_to_pixels(x, y) {
-            var r = [x / 0.78125 + 89600, y / 0.78125 + 89600];
-            if (x < -31056.8 && y < -5832.867) {
-                r = [r[0] / 1.3333333 + 10750, r[1] / 1.3333333 + 21410];
+        // TileMapInfo.json 데이터
+        var game_x1 = -94621.8047;
+        var game_x2 = 79370.13;
+        var game_y1 = -80209.1641;
+        var game_y2 = 93782.77;
+        var game_x_range = game_x2 - game_x1;
+        var game_y_range = game_y2 - game_y1;
+
+        function game_coord_to_pixels(x, z) {
+            // 새 맵 좌표 변환 공식
+            var px = ((x - game_x1) / game_x_range) * MAX_X;
+            var py = ((z - game_y1) / game_y_range) * MAX_Y;
+            
+            // OpenLayers 좌표계에 맞게 Y 반전 (Y축은 위로 갈수록 증가)
+            return [px, MAX_Y - py];
+        }
+
+
+
+        function setTrackingState(tracking) {
+            g_behavior_center_on_player = tracking;
+            var btn = document.getElementById('map-track-btn');
+            if (btn) {
+                btn.textContent = tracking ? '🎯 추적 중' : '🔓 추적 해제';
+                btn.style.background = tracking ? 'rgba(16,185,129,0.8)' : 'rgba(239,68,68,0.8)';
             }
-            r[1] = MAX_Y - r[1];
-            return r;
+        }
+
+        function pauseTrackingTemporarily() {
+            if (g_is_programmatic_move) return;
+            if (g_behavior_center_on_player) {
+                setTrackingState(false);
+            }
+            // 5초 후 자동으로 추적 재개
+            if (g_tracking_paused_timer) clearTimeout(g_tracking_paused_timer);
+            g_tracking_paused_timer = setTimeout(function() {
+                setTrackingState(true);
+            }, 5000);
         }
 
         function initMap() {
@@ -1223,12 +1257,12 @@
                 extent: [0, 0, MAX_X, MAX_Y],
                 source: new ol.source.XYZ({
                     projection: projection,
-                    url: '/map/maps/ets2/tiles/{z}/{x}_{y}.png',
+                    url: '/map/maps/ets2/tiles/{z}/{x}/{y}.png',
                     tileSize: [512, 512],
                     tileGrid: custom_tilegrid,
                     wrapX: false,
                     minZoom: 2,
-                    maxZoom: 7
+                    maxZoom: 8
                 })
             });
 
@@ -1247,9 +1281,9 @@
                 })
             });
 
-            // 사용자가 지도를 직접 이동시키면 트럭 추적 해제
-            g_map.getView().on(['change:center', 'change:rotation'], function() {
-                if (!g_ignore_view_change_events) g_behavior_center_on_player = false;
+            // 사용자가 드래그로 지도 이동 시 5초간 추적 일시정지
+            g_map.on('pointerdrag', function() {
+                pauseTrackingTemporarily();
             });
         }
 
@@ -1261,8 +1295,10 @@
             g_playerFeature.getGeometry().setCoordinates(map_coords);
             g_playerIcon.setRotation(-rad);
 
-            g_ignore_view_change_events = true;
+
+
             if (g_behavior_center_on_player) {
+                g_is_programmatic_move = true;
                 var height = g_map.getSize() ? g_map.getSize()[1] : 300;
                 var max_ahead = height / 3.0 * g_map.getView().getResolution();
                 var amount_ahead = Math.max(-max_ahead, Math.min(speed * 0.25, max_ahead));
@@ -1272,8 +1308,8 @@
                 ];
                 g_map.getView().setCenter(ahead_coords);
                 g_map.getView().setRotation(rad);
+                g_is_programmatic_move = false;
             }
-            g_ignore_view_change_events = false;
         }
 
         loadSettings();

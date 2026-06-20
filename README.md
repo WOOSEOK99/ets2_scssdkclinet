@@ -15,6 +15,7 @@
 | **SCS SDK 플러그인 (C++)** | [nlhans/ets2-sdk-plugin](https://github.com/nlhans/ets2-sdk-plugin) (원본) |
 | **SCS SDK C# 클라이언트** | [RenCloud/scs-sdk-plugin](https://github.com/RenCloud/scs-sdk-plugin) |
 | **ETS2 지도 타일 및 내비게이션** | [mike-koch/ets2-mobile-route-advisor](https://github.com/mike-koch/ets2-mobile-route-advisor) |
+| **ETS2 지도 타일 및 내비게이션 최신맵 주소** | [Unicor-p/SCS_Map_Tiles](https://github.com/Unicor-p/SCS_Map_Tiles) |
 
 ---
 
