@@ -379,25 +379,42 @@ namespace SCSSdkClient.Demo {
         private static void ServeHtmlFile(HttpListenerContext ctx) {
             try {
                 string exeDir = AppDomain.CurrentDomain.BaseDirectory;
-                string htmlPath = System.IO.Path.Combine(exeDir, "overlay", "dashboard.html");
+                string requestPath = ctx.Request.Url.AbsolutePath;
+                if (requestPath == "/") requestPath = "/dashboard.html";
+                
+                string filePath = System.IO.Path.Combine(exeDir, "overlay", requestPath.TrimStart('/').Replace('/', '\\'));
 
-                byte[] body;
-                if (System.IO.File.Exists(htmlPath)) {
-                    body = System.IO.File.ReadAllBytes(htmlPath);
+                if (System.IO.File.Exists(filePath)) {
+                    byte[] body = System.IO.File.ReadAllBytes(filePath);
+                    string ext = System.IO.Path.GetExtension(filePath).ToLower();
+                    
+                    if (ext == ".png") ctx.Response.ContentType = "image/png";
+                    else if (ext == ".js") ctx.Response.ContentType = "application/javascript";
+                    else if (ext == ".css") ctx.Response.ContentType = "text/css";
+                    else ctx.Response.ContentType = "text/html; charset=utf-8";
+                    
+                    ctx.Response.AddHeader("Access-Control-Allow-Origin", "*");
+                    ctx.Response.ContentLength64 = body.Length;
+                    ctx.Response.OutputStream.Write(body, 0, body.Length);
+                    ctx.Response.OutputStream.Close();
                 } else {
-                    // 찾지 못한 경우 탐색한 경로를 페이지에 표시
+                    if (requestPath.EndsWith(".png")) {
+                        ctx.Response.StatusCode = 404;
+                        ctx.Response.Close();
+                        return;
+                    }
                     var sb = new System.Text.StringBuilder();
                     sb.Append("<html><body style='font-family:monospace;padding:30px;background:#111;color:#eee'>");
-                    sb.Append("<h2 style='color:#f59e0b'>dashboard.html 파일을 찾을 수 없습니다</h2>");
-                    sb.Append("<p>아래 경로에 dashboard.html 파일을 배치해 주세요:</p>");
-                    sb.Append($"<p style='color:#fff; background:#333; padding:10px; border-radius:5px;'>{htmlPath}</p>");
+                    sb.Append("<h2 style='color:#f59e0b'>파일을 찾을 수 없습니다</h2>");
+                    sb.Append($"<p>아래 경로에 파일을 배치해 주세요:</p>");
+                    sb.Append($"<p style='color:#fff; background:#333; padding:10px; border-radius:5px;'>{filePath}</p>");
                     sb.Append("</body></html>");
-                    body = Encoding.UTF8.GetBytes(sb.ToString());
+                    byte[] body = Encoding.UTF8.GetBytes(sb.ToString());
+                    ctx.Response.ContentType = "text/html; charset=utf-8";
+                    ctx.Response.ContentLength64 = body.Length;
+                    ctx.Response.OutputStream.Write(body, 0, body.Length);
+                    ctx.Response.OutputStream.Close();
                 }
-                ctx.Response.ContentType = "text/html; charset=utf-8";
-                ctx.Response.ContentLength64 = body.Length;
-                ctx.Response.OutputStream.Write(body, 0, body.Length);
-                ctx.Response.OutputStream.Close();
             } catch {
                 try { ctx.Response.StatusCode = 500; ctx.Response.Close(); } catch { }
             }

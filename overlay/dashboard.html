@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ETS2/ATS Telemetry Dashboard Pro</title>
+    <!-- OpenLayers (지역 파일) -->
+    <script src="/map/maps/ets2/js/ol.js"></script>
     <style>
         :root {
             --bg-color: #0f1115;
@@ -562,26 +564,47 @@
                         </div>
                     </div>
 
-                    <!-- RPM -->
-                    <div class="gauge-wrapper" style="width: 160px; height: 160px;">
-                        <svg viewBox="0 0 200 200" class="gauge-svg">
-                            <defs>
-                                <linearGradient id="rpm-grad" x1="0%" y1="100%" x2="100%" y2="0%">
-                                    <stop offset="0%" stop-color="#10b981" />
-                                    <stop offset="80%" stop-color="#f59e0b" />
-                                    <stop offset="100%" stop-color="#ef4444" />
-                                </linearGradient>
-                            </defs>
-                            <circle cx="100" cy="100" r="85" fill="none" stroke="var(--gauge-bg)" stroke-width="14"
-                                stroke-dasharray="400.553 534.071" stroke-dashoffset="0" stroke-linecap="round" />
-                            <circle id="rpm-gauge" cx="100" cy="100" r="85" fill="none" stroke="url(#rpm-grad)"
-                                stroke-width="14" stroke-dasharray="400.553 534.071" stroke-dashoffset="400.553"
-                                stroke-linecap="round" style="transition: stroke-dashoffset 0.1s linear;" />
-                        </svg>
-                        <div class="gauge-center">
-                            <div id="truck-rpm" class="rpm-val">0</div>
-                            <div class="rpm-unit">x100 RPM</div>
-                            <div id="truck-rpm-max" class="rpm-max">MAX: 25</div>
+                    <!-- RPM + 연료 정보를 세로로 묶음 -->
+                    <div style="display: flex; flex-direction: column; gap: 8px; align-items: center;">
+                        <!-- RPM 게이지 -->
+                        <div class="gauge-wrapper" style="width: 140px; height: 140px;">
+                            <svg viewBox="0 0 200 200" class="gauge-svg">
+                                <defs>
+                                    <linearGradient id="rpm-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="#10b981" />
+                                        <stop offset="80%" stop-color="#f59e0b" />
+                                        <stop offset="100%" stop-color="#ef4444" />
+                                    </linearGradient>
+                                </defs>
+                                <circle cx="100" cy="100" r="85" fill="none" stroke="var(--gauge-bg)" stroke-width="14"
+                                    stroke-dasharray="400.553 534.071" stroke-dashoffset="0" stroke-linecap="round" />
+                                <circle id="rpm-gauge" cx="100" cy="100" r="85" fill="none" stroke="url(#rpm-grad)"
+                                    stroke-width="14" stroke-dasharray="400.553 534.071" stroke-dashoffset="400.553"
+                                    stroke-linecap="round" style="transition: stroke-dashoffset 0.1s linear;" />
+                            </svg>
+                            <div class="gauge-center">
+                                <div id="truck-rpm" class="rpm-val">0</div>
+                                <div class="rpm-unit">x100 RPM</div>
+                                <div id="truck-rpm-max" class="rpm-max">MAX: 25</div>
+                            </div>
+                        </div>
+                        <!-- 연료/요소수/주행거리 (RPM 아래) -->
+                        <div style="width: 140px; display: flex; flex-direction: column; gap: 6px; padding: 6px 4px; border-top: 1px solid #2d3139;">
+                            <div class="gauge-item">
+                                <div class="gauge-meta" style="font-size: 10px;"><span>디젤 잔량</span><span id="fuel-text">0L (0km)</span></div>
+                                <div class="gauge-outer" style="height:6px;">
+                                    <div id="fuel-bar" class="gauge-inner"></div>
+                                </div>
+                            </div>
+                            <div class="gauge-item">
+                                <div class="gauge-meta" style="font-size: 10px;"><span>요소수</span><span id="adblue-text">0L</span></div>
+                                <div class="gauge-outer" style="height:6px;">
+                                    <div id="adblue-bar" class="gauge-inner" style="background: var(--accent-blue);"></div>
+                                </div>
+                            </div>
+                            <div style="display:flex; justify-content:space-between; font-size:10px; color:var(--text-muted);">
+                                <span>주행거리</span><span id="truck-odometer" style="color:var(--text-main); font-weight:bold;">0.0 km</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -685,55 +708,40 @@
         <!-- CENTER COLUMN -->
         <div class="col">
             <!-- 5. 내비게이션 -->
-            <div class="panel" id="panel-nav" style="flex: 1;">
-                <div class="panel-title">내비게이션</div>
-                <div style="flex: 1; display: flex; align-items: center;">
+            <div class="panel" id="panel-nav" style="flex: 2.5; display: flex; flex-direction: column; padding: 8px;">
+                <div class="panel-title" style="flex-shrink:0;">내비게이션</div>
+                <!-- 지도 컨테이너 -->
+                <div id="ets2map" style="flex: 1; min-height: 0; border-radius: 6px; overflow: hidden; background: #15181e;"></div>
+                <!-- 하단 정보 -->
+                <div style="flex-shrink: 0; display: flex; align-items: center; margin-top: 6px;">
                     <div class="nav-grid" style="width: 100%;">
                         <div id="speed-limit-container">
                             <div class="speed-limit-none">제한 없음</div>
                         </div>
-                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; flex-direction: column; gap: 4px;">
                             <div class="info-row" style="border:none;"><span>남은 거리</span><span id="nav-distance"
-                                    style="font-size: 18px; font-weight: bold; color: var(--accent-blue);">0 km</span>
-                            </div>
+                                    style="font-size: 16px; font-weight: bold; color: var(--accent-blue);">0 km</span></div>
                             <div class="info-row" style="border:none;"><span>예상 시간</span><span id="nav-time"
-                                    style="font-size: 16px; font-weight: bold;">0분</span></div>
+                                    style="font-size: 14px; font-weight: bold;">0분</span></div>
                         </div>
                     </div>
                 </div>
             </div>
 
             <!-- 6. 운송 작업 -->
-            <div class="panel" id="panel-job" style="display: none; flex: 1;">
-                <div class="panel-title">현재 운송 작업</div>
-                <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-evenly;">
-                    <div class="info-row"><span>경로</span><span id="job-route">-</span></div>
-                    <div class="info-row"><span>화물</span><span id="job-cargo">-</span></div>
-                    <div class="info-row"><span>무게</span><span id="job-mass">0 t</span></div>
-                    <div class="info-row"><span>예상 수익</span><span id="job-income"
-                            style="color:var(--accent-green); font-weight:bold;">0</span></div>
-                    <div class="info-row"><span>납품 기한</span><span id="job-delivery">0분</span></div>
+            <div class="panel" id="panel-job" style="flex: 0.6; display: flex; flex-direction: column; padding: 8px;">
+                <div class="panel-title" style="font-size:12px; margin-bottom:4px;">현재 운송 작업</div>
+                <div id="job-active-content" style="flex: 1; display: flex; flex-direction: column; justify-content: space-evenly; gap: 2px;">
+                    <div class="info-row" style="font-size:11px; padding: 2px 0; border-color:#2d3139;"><span>경로</span><span id="job-route" style="font-size:11px;">-</span></div>
+                    <div class="info-row" style="font-size:11px; padding: 2px 0; border-color:#2d3139;"><span>화물</span><span id="job-cargo" style="font-size:11px;">-</span></div>
+                    <div class="info-row" style="font-size:11px; padding: 2px 0; border-color:#2d3139;">
+                        <span>무게</span><span id="job-mass" style="font-size:11px;">0 t</span>
+                        <span style="margin-left:8px; color:var(--text-muted);">|개수익</span><span id="job-income" style="font-size:11px; color:var(--accent-green); font-weight:bold;">0</span>
+                    </div>
+                    <div class="info-row" style="font-size:11px; padding: 2px 0; border-color:#2d3139;"><span>납품기한</span><span id="job-delivery" style="font-size:11px;">0분</span></div>
                 </div>
-            </div>
-
-            <!-- 2. 연료 및 소모품 -->
-            <div class="panel" id="panel-fuel" style="flex: 1;">
-                <div class="panel-title">연료 및 소모품</div>
-                <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-evenly;">
-                    <div class="gauge-item">
-                        <div class="gauge-meta"><span>디젤 잔량</span><span id="fuel-text">0L (0km)</span></div>
-                        <div class="gauge-outer">
-                            <div id="fuel-bar" class="gauge-inner"></div>
-                        </div>
-                    </div>
-                    <div class="gauge-item">
-                        <div class="gauge-meta"><span>요소수 (AdBlue)</span><span id="adblue-text">0L</span></div>
-                        <div class="gauge-outer">
-                            <div id="adblue-bar" class="gauge-inner"></div>
-                        </div>
-                    </div>
-                    <div class="info-row" style="margin-top: 10px;"><span>총 주행거리</span><span id="truck-odometer">0.0
-                            km</span></div>
+                <div id="job-inactive-content" style="flex: 1; display: none; justify-content: center; align-items: center;">
+                    <span style="color: var(--text-muted); font-size: 13px;">자유 주행 중</span>
                 </div>
             </div>
         </div>
@@ -879,8 +887,6 @@
                     class="panel-toggle" data-target="panel-nav"></div>
             <div class="setting-item"><label for="chk-job">운송 작업</label><input type="checkbox" id="chk-job"
                     class="panel-toggle" data-target="panel-job"></div>
-            <div class="setting-item"><label for="chk-fuel">연료 및 소모품</label><input type="checkbox" id="chk-fuel"
-                    class="panel-toggle" data-target="panel-fuel"></div>
             <div class="setting-item"><label for="chk-damage">차량 파손도</label><input type="checkbox" id="chk-damage"
                     class="panel-toggle" data-target="panel-damage"></div>
             <div class="setting-item"><label for="chk-lights">자동차 라이트</label><input type="checkbox" id="chk-lights"
@@ -897,7 +903,7 @@
         // --- 설정 관리 (LocalStorage) ---
         const defaultSettings = {
             "panel-cluster": true,
-            "panel-nav": true, "panel-job": true, "panel-fuel": true, "panel-damage": true,
+            "panel-nav": true, "panel-job": true, "panel-damage": true,
             "panel-lights": true, "panel-warnings": true
         };
 
@@ -926,11 +932,6 @@
             if (el) {
                 if (isVisible) el.classList.remove('hidden');
                 else el.classList.add('hidden');
-
-                if (id === "panel-job") {
-                    if (!isVisible) el.style.display = "none";
-                    // 만약 onJob 상태라면 updateUI에서 다시 flex로 켜줌
-                }
             }
         }
 
@@ -1033,27 +1034,38 @@
             document.getElementById("nav-distance").textContent = nav.distanceM >= 1000 ? (nav.distanceM / 1000).toFixed(1) + " km" : Math.round(nav.distanceM) + " m";
             document.getElementById("nav-time").textContent = formatSec(nav.timeRemainingSec);
 
+            // 지도 위치 업데이트
+            if (t.position) {
+                updateMap(t.position.x, t.position.z, t.position.heading, Math.abs(t.speed.kph));
+            }
+
             // 4. Job
-            const jobPanel = document.getElementById("panel-job");
+            const jobActiveContent = document.getElementById("job-active-content");
+            const jobInactiveContent = document.getElementById("job-inactive-content");
             if (data.job && data.job.onJob) {
-                if (!jobPanel.classList.contains('hidden')) jobPanel.style.display = "flex";
+                if (jobActiveContent) jobActiveContent.style.display = "flex";
+                if (jobInactiveContent) jobInactiveContent.style.display = "none";
                 document.getElementById("job-route").textContent = `${data.job.source.city} → ${data.job.destination.city}`;
                 document.getElementById("job-cargo").textContent = data.job.cargo.name;
                 document.getElementById("job-mass").textContent = (data.job.cargo.massKg / 1000).toFixed(1) + " t";
                 document.getElementById("job-income").textContent = "€ " + data.job.income.toLocaleString();
                 document.getElementById("job-delivery").textContent = formatTime(data.job.deliveryTime.remainingMin);
             } else {
-                jobPanel.style.display = "none";
+                if (jobActiveContent) jobActiveContent.style.display = "none";
+                if (jobInactiveContent) jobInactiveContent.style.display = "flex";
             }
 
             // 5. Fuel
-            document.getElementById("fuel-text").textContent = `${Math.round(t.fuel.amount)}L (${Math.round(t.fuel.range)}km)`;
-            document.getElementById("fuel-bar").style.width = `${Math.min((t.fuel.amount / t.fuel.capacity) * 100, 100)}%`;
-            document.getElementById("fuel-bar").className = t.fuel.warning ? "gauge-inner warning" : "gauge-inner";
-            document.getElementById("adblue-text").textContent = `${Math.round(t.adblue.amount)}L`;
-            document.getElementById("adblue-bar").style.width = `${Math.min((t.adblue.amount / t.adblue.capacity) * 100, 100)}%`;
-            document.getElementById("adblue-bar").className = t.adblue.warning ? "gauge-inner warning" : "gauge-inner";
-            document.getElementById("truck-odometer").textContent = t.odometer.toFixed(1) + " km";
+            const fuelBar = document.getElementById("fuel-bar");
+            if(fuelBar) {
+                document.getElementById("fuel-text").textContent = `${Math.round(t.fuel.amount)}L (${Math.round(t.fuel.range)}km)`;
+                fuelBar.style.width = `${Math.min((t.fuel.amount / t.fuel.capacity) * 100, 100)}%`;
+                fuelBar.className = t.fuel.warning ? "gauge-inner warning" : "gauge-inner";
+                document.getElementById("adblue-text").textContent = `${Math.round(t.adblue.amount)}L`;
+                document.getElementById("adblue-bar").style.width = `${Math.min((t.adblue.amount / t.adblue.capacity) * 100, 100)}%`;
+                document.getElementById("adblue-bar").className = t.adblue.warning ? "gauge-inner warning" : "gauge-inner";
+                document.getElementById("truck-odometer").textContent = t.odometer.toFixed(1) + " km";
+            }
 
             // 6. Damage
             const setDmg = (id, val) => {
@@ -1151,7 +1163,121 @@
             };
         }
 
+        // --- ETS2 Map (OpenLayers) ---
+        var MAX_X = 173568;
+        var MAX_Y = 192512;
+        var g_map = null;
+        var g_playerFeature = null;
+        var g_playerIcon = null;
+        var g_behavior_center_on_player = true;
+        var g_behavior_rotate_with_player = true;
+        var g_ignore_view_change_events = false;
+
+        function game_coord_to_pixels(x, y) {
+            var r = [x / 0.78125 + 89600, y / 0.78125 + 89600];
+            if (x < -31056.8 && y < -5832.867) {
+                r = [r[0] / 1.3333333 + 10750, r[1] / 1.3333333 + 21410];
+            }
+            r[1] = MAX_Y - r[1];
+            return r;
+        }
+
+        function initMap() {
+            if (typeof ol === 'undefined') { console.warn('OpenLayers not loaded'); return; }
+
+            var projection = new ol.proj.Projection({
+                code: 'ETS2',
+                units: 'pixels',
+                extent: [0, 0, MAX_X, MAX_Y],
+                worldExtent: [0, 0, MAX_X, MAX_Y]
+            });
+            ol.proj.addProjection(projection);
+
+            var custom_tilegrid = new ol.tilegrid.TileGrid({
+                extent: [0, 0, MAX_X, MAX_Y],
+                minZoom: 0,
+                origin: [0, MAX_Y],
+                tileSize: [512, 512],
+                resolutions: (function() {
+                    var r = [];
+                    for (var z = 0; z <= 8; ++z) r[z] = Math.pow(2, 8 - z);
+                    return r;
+                })()
+            });
+
+            g_playerIcon = new ol.style.Icon({
+                anchor: [0.5, 39],
+                anchorXUnits: 'fraction',
+                anchorYUnits: 'pixels',
+                rotateWithView: true,
+                src: '/map/img/player_proportions.png'
+            });
+
+            g_playerFeature = new ol.Feature({ geometry: new ol.geom.Point([MAX_X/2, MAX_Y/2]) });
+            g_playerFeature.setStyle(new ol.style.Style({ image: g_playerIcon }));
+
+            var featureSource = new ol.source.Vector({ features: [g_playerFeature], wrapX: false });
+            var vectorLayer = new ol.layer.Vector({ source: featureSource });
+
+            var tileLayer = new ol.layer.Tile({
+                extent: [0, 0, MAX_X, MAX_Y],
+                source: new ol.source.XYZ({
+                    projection: projection,
+                    url: '/map/maps/ets2/tiles/{z}/{x}_{y}.png',
+                    tileSize: [512, 512],
+                    tileGrid: custom_tilegrid,
+                    wrapX: false,
+                    minZoom: 2,
+                    maxZoom: 7
+                })
+            });
+
+            g_map = new ol.Map({
+                target: 'ets2map',
+                controls: [],
+                interactions: ol.interaction.defaults(),
+                layers: [tileLayer, vectorLayer],
+                view: new ol.View({
+                    projection: projection,
+                    extent: [0, 0, MAX_X, MAX_Y],
+                    center: [MAX_X/2, MAX_Y/2],
+                    minZoom: 2,
+                    maxZoom: 8,
+                    zoom: 5
+                })
+            });
+
+            // 사용자가 지도를 직접 이동시키면 트럭 추적 해제
+            g_map.getView().on(['change:center', 'change:rotation'], function() {
+                if (!g_ignore_view_change_events) g_behavior_center_on_player = false;
+            });
+        }
+
+        function updateMap(lon, lat, rot, speed) {
+            if (!g_map || !g_playerFeature) return;
+            var map_coords = game_coord_to_pixels(lon, lat);
+            var rad = rot * Math.PI * 2;
+
+            g_playerFeature.getGeometry().setCoordinates(map_coords);
+            g_playerIcon.setRotation(-rad);
+
+            g_ignore_view_change_events = true;
+            if (g_behavior_center_on_player) {
+                var height = g_map.getSize() ? g_map.getSize()[1] : 300;
+                var max_ahead = height / 3.0 * g_map.getView().getResolution();
+                var amount_ahead = Math.max(-max_ahead, Math.min(speed * 0.25, max_ahead));
+                var ahead_coords = [
+                    map_coords[0] + Math.sin(-rad) * amount_ahead,
+                    map_coords[1] + Math.cos(-rad) * amount_ahead
+                ];
+                g_map.getView().setCenter(ahead_coords);
+                g_map.getView().setRotation(rad);
+            }
+            g_ignore_view_change_events = false;
+        }
+
         loadSettings();
+        initMap();
         connect();
     </script>
 </body>
